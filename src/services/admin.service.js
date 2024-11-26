@@ -9,17 +9,17 @@ const { CatchError } = require('../utils/Response');
 const UserRepository = new CrudRepository(User);
 const TokenRepository = new CrudRepository(Token);
 
-class UserService {
+class AdminService {
 
     async registerUser(userData) {
-        const { name, email } = userData;
+        const { name, email, mobile_number, role } = userData;
         try {
             const exists = await this.userExists(email);
             if (exists.success) {
                 return ServiceResponse(false, StatusCodes.CONFLICT, 'This email is already registered with another user.')
             }
 
-            const newUser = await UserRepository.create({ name, email })
+            const newUser = await UserRepository.create({ name, email, mobile_number, role })
 
             const token = cryptoTokenGenerator()
             await TokenRepository.create({ email, token });
@@ -71,6 +71,34 @@ class UserService {
         }
     }
 
+    async toggleUserActiveStatus(email) {
+        try {
+            const userCheck = await this.userExists(email);
+            if (!userCheck.success) {
+                return userCheck;
+            }
+            let {is_active} = await UserRepository.toggleActiveStatus({ email });
+            return ServiceResponse(true, StatusCodes.OK, is_active ? "User activated successfully." : "User deactivated successfully.");
+        } catch (error) {
+            cconsole.error("An error occurred while attempting user activation or deactivation:", error);
+            CatchError(error);
+        }
+    }
+    
+    async softDeleteUser(email) {
+        try {
+            const userCheck = await this.userExists(email);
+            if (!userCheck.success) {
+                return userCheck;
+            }
+            await UserRepository.softdelete({ email });
+            return ServiceResponse(true, StatusCodes.OK, "User has been soft-deleted successfully.");
+        } catch (error) {
+            console.error("An error occurred while attempting to soft delete the user.", error);
+            CatchError(error);
+        }
+    }
+
     async deleteUser(email) {
         try {
             const userCheck = await this.userExists(email);
@@ -86,4 +114,4 @@ class UserService {
     }
 }
 
-module.exports = new UserService();
+module.exports = new AdminService();

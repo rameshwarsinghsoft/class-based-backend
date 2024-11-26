@@ -9,6 +9,5 @@ router.post('/login', validate(loginSchema), login);
 router.post('/set-password', validate(setPasswordSchema), setPassword);
 router.post('/change-password', validate(changePasswordSchema), AuthMiddleware.verifyToken, changePassword);
 router.post('/forgot-password', validate(forgetPasswordSchema), forgotPassword);
-// router.post('/reset-password', validate(setPasswordSchema), setPassword);
 
 module.exports = router;

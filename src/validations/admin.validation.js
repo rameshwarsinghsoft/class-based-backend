@@ -1,11 +1,18 @@
 const Joi = require('joi');
-const { requiredString, emailField, nameField } = require('./fieldHelpers');
-const { param } = require('../routes/user.routes');
+const { requiredString, requiredNumber, emailFieldOptional, emailField, nameField, mobileNumberField } = require('./fieldHelpers');
 
 const registerSchema = {
     body: Joi.object({
         name: nameField(),
         email: emailField(),
+        mobile_number: mobileNumberField(),
+        role: requiredNumber("Role")
+    }).unknown(true),
+};
+
+const getUserSchema = {
+    params: Joi.object({
+        email: emailFieldOptional(),
     }),
 };
 
@@ -15,6 +22,8 @@ const updateUserSchema = {
     }),
     body: Joi.object({
         name: nameField(),
+        email: emailField(),
+        mobile_number: mobileNumberField(),
     }),
 };
 
@@ -26,6 +35,7 @@ const deleteUserSchema = {
 
 module.exports = {
     registerSchema,
+    getUserSchema,
     updateUserSchema,
     deleteUserSchema
 };

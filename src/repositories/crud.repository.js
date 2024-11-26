@@ -72,6 +72,31 @@ class CrudRepository {
         }
     }
 
+    async toggleActiveStatus(criteria) {
+        try {
+            const resource = await this.model.findOne(criteria);
+            return await this.model.findOneAndUpdate(
+                criteria,
+                { $set: { is_active: !resource.is_active } },
+                { new: true }
+            );
+        } catch (error) {
+            CatchError(error);
+        }
+    }
+    
+    async softdelete(criteria) {
+        try {
+            return await this.model.findOneAndUpdate(
+                criteria,
+                { $set: { is_delete: true } },
+                { new: true }
+            );
+        } catch (error) {
+            CatchError(error);
+        }
+    }
+
     async deleteOne(criteria) {
         try {
             return await this.model.deleteOne(criteria);

@@ -1,17 +1,26 @@
 const Joi = require('joi');
 
-// required
 const requiredMessage = (fieldName) => `${fieldName} is required`;
 
-// common messages
+// string
+// =========================================================================================================================================================
 const stringMessages = (fieldName) => ({
     'string.base': `${fieldName} must be a text value`,
     'string.empty': `${fieldName} cannot be empty`,
 });
-
-// Helper for required string field
 const requiredString = (fieldName) => Joi.string().required().messages({
     ...stringMessages(fieldName),
+    'any.required': requiredMessage(fieldName),
+});
+
+// number
+// =========================================================================================================================================================
+const numberMessages = (fieldName) => ({
+    'number.base': `${fieldName} must be a number`,
+    'number.empty': `${fieldName} cannot be empty`,
+});
+const requiredNumber = (fieldName) => Joi.number().required().messages({
+    ...numberMessages(fieldName),
     'any.required': requiredMessage(fieldName),
 });
 
@@ -29,6 +38,25 @@ const emailField = () => Joi.string().email().required().messages({
     'any.required': requiredMessage("Email"),
 });
 
+const emailFieldOptional = () => Joi.string()
+    .email()
+    .optional()
+    .messages({
+        'string.base': 'Email must be a text value',
+        'string.empty': 'Email cannot be empty',
+        'string.email': 'Please enter a valid email',
+    });
+
+
+const mobileNumberField = () => Joi.string()
+    .pattern(/^(\+?\d{1,4})?[\s\-\(\)]?(\d{3})[\s\-\(\)]?(\d{3})[\s\-\(\)]?(\d{4})$/)
+    .required()
+    .messages({
+        'any.required': requiredMessage("Mobile Number"),
+        ...stringMessages("Mobile Number"),
+        'string.pattern.base': `Mobile Number must be a valid phone number`,
+    });
+
 const passwordField = (fieldName) => Joi.string()
     .min(7)
     .max(20)
@@ -42,7 +70,7 @@ const passwordField = (fieldName) => Joi.string()
         'string.pattern.base': `${fieldName} must be 7-20 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character`,
     });
 
-    const confirmPasswordField = (fieldName, referenceField) => Joi.string()
+const confirmPasswordField = (fieldName, referenceField) => Joi.string()
     .valid(Joi.ref(referenceField))  // Dynamically use the reference (password or new_password)
     .required()
     .messages({
@@ -50,11 +78,13 @@ const passwordField = (fieldName) => Joi.string()
         'any.required': `${fieldName} is required.`,
     });
 
-
 module.exports = {
+    requiredNumber,
     requiredString,
     nameField,
+    emailFieldOptional,
     emailField,
+    mobileNumberField,
     passwordField,
     confirmPasswordField,
 };

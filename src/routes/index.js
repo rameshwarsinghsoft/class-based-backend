@@ -1,11 +1,9 @@
-// module.exports.UserRoutes = require('./user.routes')
-// module.exports.UserRoutes = require('./user.routes')
 
-const userRoutes = require('./user.routes');
+const adminRoutes = require('./admin.routes');
 const authRoutes = require('./auth.routes');
 
 const apiRouter = (app) => {
-    app.use('/user', userRoutes);
+    app.use('/admin', adminRoutes);
     app.use('/auth', authRoutes);
 };
 

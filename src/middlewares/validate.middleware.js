@@ -6,7 +6,7 @@ const validateRequest = (schema) => (req, res, next) => {
     const validationErrors = [];
     // Iterate through each source defined in the schema (query, body, params, etc.)
     Object.entries(schema).forEach(([source, rules]) => {
-        console.log("source : ", source)
+        // console.log("source : ", source)
         // console.log("rules : ", rules)
         // console.log("(req[source] : ", (req[source]))
 
