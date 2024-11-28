@@ -21,7 +21,7 @@ class AdminService {
 
             const newUser = await UserRepository.create({ name, email, mobile_number, role })
 
-            const token = cryptoTokenGenerator()
+            const token = cryptoTokenGenerator();
             await TokenRepository.create({ email, token });
 
             await MailService.createPasswordEmail(email, token)

@@ -4,22 +4,19 @@ const { ApiResponse } = require('../utils/Response');
 
 const validateRequest = (schema) => (req, res, next) => {
     const validationErrors = [];
-    // Iterate through each source defined in the schema (query, body, params, etc.)
-    Object.entries(schema).forEach(([source, rules]) => {
-        // console.log("source : ", source)
-        // console.log("rules : ", rules)
-        // console.log("(req[source] : ", (req[source]))
 
-        const { error } = rules.validate(req[source], { abortEarly: false });
+    // Iterate through each source defined in the schema (params, body, files, etc.)
+    Object.entries(schema).forEach(([source, rules]) => {
+        const data = source === 'files' ? req.files : req[source]; // Handle `files` explicitly
+        const { error } = rules.validate(data, { abortEarly: false });
         if (error) {
-            console.log("error : ", error)
-            // with source:- ${source}
-            // validationErrors.push(...error.details.map((err) => `${source}: ${err.message}`));
             validationErrors.push(...error.details.map((err) => `${err.message}`));
         }
     });
 
-    if (validationErrors.length > 0) return ApiResponse(res, StatusCodes.BAD_REQUEST, validationErrors[0]);
+    if (validationErrors.length > 0) {
+        return ApiResponse(res, StatusCodes.BAD_REQUEST, validationErrors[0]);
+    }
 
     next();
 };

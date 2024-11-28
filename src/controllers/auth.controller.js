@@ -31,7 +31,7 @@ class AuthController {
 
     async changePassword(req, res) {
         try {
-            const user = req.user
+            const user = req.user;
             const { current_password, new_password, confirm_password } = req.body;
             const { status, message } = await AuthService.updatePassword(user, current_password, new_password, confirm_password);
             return ApiResponse(res, status, message);

@@ -57,6 +57,25 @@ const mobileNumberField = () => Joi.string()
         'string.pattern.base': `Mobile Number must be a valid phone number`,
     });
 
+const aadhaarNumberField = () => Joi.string()
+    .pattern(/^\d{12}$/)  // Ensures exactly 12 digits
+    .required()
+    .messages({
+        'any.required': requiredMessage("Aadhaar Number"),
+        ...stringMessages("Aadhaar Number"),
+        'string.pattern.base': `Aadhaar Number must be a valid 12-digit number`,
+    });
+
+// PAN number validation field
+const panNumberField = () => Joi.string()
+    .pattern(/^[A-Z]{5}\d{4}[A-Z]{1}$/)
+    .required()
+    .messages({
+        'any.required': requiredMessage("PAN Number"),
+        ...stringMessages("PAN Number"),
+        'string.pattern.base': `PAN Number must be a valid PAN (e.g. ABCDE1234F)`,
+    });
+
 const passwordField = (fieldName) => Joi.string()
     .min(7)
     .max(20)
@@ -78,6 +97,50 @@ const confirmPasswordField = (fieldName, referenceField) => Joi.string()
         'any.required': `${fieldName} is required.`,
     });
 
+// Image File Validation
+const imageField1 = () => Joi.object({
+    file: Joi.object({
+        mimetype: Joi.string().valid('image/jpeg', 'image/png').required().messages({
+            'any.required': 'Profile Image must be an image (JPEG or PNG)',
+            'string.valid': 'Profile Image must be a JPEG or PNG image',
+        }),
+        size: Joi.number().max(5 * 1024 * 1024).required().messages({
+            'any.required': 'Profile Image size must be provided',
+            'number.max': 'Profile Image must be less than 5MB',
+        }),
+    }).required().messages({
+        'any.required': 'Profile Image is required',
+    }),
+});
+
+const imageField = () =>
+    Joi.array()
+        .items(
+            Joi.object({
+                // mimetype: Joi.string()
+                //     .valid('image/jpeg', 'image/png')
+                //     .required()
+                //     .messages({
+                //         'any.required': 'Image must be a JPEG or PNG file',
+                //         'string.valid': 'Image must be a JPEG or PNG file',
+                //     }),
+                size: Joi.number()
+                    .max(5 * 1024 * 1024)
+                    .required()
+                    .messages({
+                        'any.required': 'Image size must be provided',
+                        'number.max': 'Image must be less than 5MB',
+                    }),
+            })
+        )
+        .min(1)
+        .required()
+        .messages({
+            'any.required': 'Image is required',
+            'array.min': 'Image is required',
+        });
+
+
 module.exports = {
     requiredNumber,
     requiredString,
@@ -87,4 +150,7 @@ module.exports = {
     mobileNumberField,
     passwordField,
     confirmPasswordField,
+    aadhaarNumberField,
+    panNumberField,
+    imageField
 };
